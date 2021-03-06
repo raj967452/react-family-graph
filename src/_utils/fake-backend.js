@@ -1,5 +1,12 @@
-import fakeTreeData from '../Data/tree-data';
-let users = JSON.parse(localStorage.getItem('users')) || [];
+import usersFakeTreeData from '../Data/tree-data';
+
+let users = JSON.parse(localStorage.getItem('users')) || [{
+    id: 1,
+    username: 'test',
+    firstName: 'Khemraj',
+    lastName: 'Saini',
+    password: 'test'
+}];
 
 export function configureFakeBackend() {
     let fetchAPI = window.fetch;
@@ -81,69 +88,3 @@ export function configureFakeBackend() {
         });
     }
 }
-
-
-const usersFakeTreeData = [{
-    id: 1,
-    familyData: {
-        timestamp: '15/02/2021 10:00',
-        name: 'Ben',
-        personalData: {
-            relation: "Father",
-            age: 45,
-            gender: "male"
-        },
-        children: [
-            {
-                name: 'John',
-                personalData: {
-                    relation: "Son",
-                    age: 20,
-                    gender: "male"
-                },
-                children: []
-            },
-            {
-                name: 'Freda',
-                personalData: {
-                    relation: "Daughter",
-                    age: 22,
-                    gender: "female"
-                },
-                children: []
-            }
-        ]
-    }
-},
-{
-    id: 2,
-    familyData: {
-        timestamp: '15/02/2021 10:00',
-        name: 'Ben',
-        personalData: {
-            relation: "Father",
-            age: 45,
-            gender: "male"
-        },
-        children: [
-            {
-                name: 'John',
-                personalData: {
-                    relation: "Son",
-                    age: 20,
-                    gender: "male"
-                },
-                children: []
-            },
-            {
-                name: 'Freda',
-                personalData: {
-                    relation: "Daughter",
-                    age: 22,
-                    gender: "female"
-                },
-                children: []
-            }
-        ]
-    }
-}]

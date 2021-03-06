@@ -1,33 +1,53 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Tree from 'react-d3-tree';
 
 import logo from '../../logo.svg';
-import { authActions, userActions } from '../../_actions';
+import { userActions, utilsActions } from '../../_actions';
 import { useCenteredTree, renderForeignObjectNode } from '../../_utils';
-import { Modal } from '../../_components';
+import { ModalRoot } from '../../_components';
 
 const containerStyles = {
     width: 'calc(100vw - 3rem)',
     height: 'calc(90vh - 3rem)'
 };
 
-function HomePage(props) {
-    const user = useSelector(state => state.authentication.user, []);
-    const [translate, containerRef] = useCenteredTree();
+function HomePage() {
 
-    const nodeSize = { x: 200, y: 200 };
-    const foreignObjectProps = { width: nodeSize.x, height: nodeSize.y, x: 25 };
     const dispatch = useDispatch();
-    useEffect(() => { dispatch(userActions.getFamilyTree(user.id)); }, []);
+
+    const user = useSelector(state => state.authentication.user, []);
     const userFamilyTree = useSelector(state => state.userFamilyTree);
+    const ismodalOpen = useSelector(state => state.modal.modalProps.open);
+    console.log(ismodalOpen);
+
+    const [translate, containerRef] = useCenteredTree();
+    const nodeSize = { x: 200, y: 200 };
+    const foreignObjectProps = { width: nodeSize.x, height: nodeSize.y, x: 25, y: -20 };    
+
+    useEffect(() => { dispatch(userActions.getFamilyTree(user.id)); }, []);   
+
+    const hideModal = () => dispatch(utilsActions.hideModal);
+    const showModal = (modalProps, modalType) => {
+        dispatch(utilsActions.showModal({ modalProps, modalType }))
+    }
+
+    const handleNodeClick = (nodeDatum) => {
+        showModal({
+            open: true,
+            title: 'Family Information of ',
+            nodeDatum,
+            closeModal: hideModal
+        }, 'TreeModal');
+    };
+
 
     return (
         <Fragment>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <header className="App-header">
-                    <Link to="/" className="flex-grow-1"><img src={logo} className="App-logo" alt="logo" /></Link>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light  py-3">
+                <header className="App-header justify-content-between">
+                    <Link to="/"><img src={logo} className="App-logo" alt="logo" /></Link>
                     <Link to="/login" className="btn btn-outline-primary">Logout</Link>
                 </header>
             </nav>
@@ -44,15 +64,17 @@ function HomePage(props) {
                                 nodeSize={nodeSize}
                                 orientation="vertical"
                                 renderCustomNodeElement={(rd3tProps) =>
-                                    renderForeignObjectNode({ ...rd3tProps, foreignObjectProps })
+                                    renderForeignObjectNode({ ...rd3tProps, foreignObjectProps, handleNodeClick })
                                 }
-                                allowForeignObjects                                
+                                allowForeignObjects
                             />
                         </div>}
+                    {ismodalOpen && <ModalRoot hideModal={hideModal} />}
                 </div>
             </div>
         </Fragment>
     );
 }
+
 
 export { HomePage };
